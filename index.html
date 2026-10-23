@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>X-Scrow — Trade Crypto Peer-to-Peer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #0d0d0d;
+      color: #fff;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+
+    /* ── Tokens ── */
+    :root {
+      --blue: #2563EB;
+      --blue-hover: #1d4ed8;
+      --blue-muted: rgba(37,99,235,0.15);
+      --card: #1a1a1a;
+      --border: #2a2a2a;
+      --border-light: #333;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --text-muted: #6b7280;
+      --text-secondary: #9ca3af;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(13,13,13,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+    .nav-logo-icon {
+      width: 36px; height: 36px;
+      background: #0d0d0d;
+      border-radius: 8px;
+      border: 1px solid #2a2a2a;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: color 0.15s;
+    }
+    .nav-links a:hover { color: #fff; }
+    .nav-cta {
+      padding: 10px 20px;
+      border-radius: 9999px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.15s;
+      border: none;
+      cursor: pointer;
+    }
+    .nav-cta:hover { background: var(--blue-hover); }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Glow blobs */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(37,99,235,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -100px; right: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: var(--blue-muted);
+      border: 1px solid rgba(37,99,235,0.3);
+      color: #60a5fa;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 28px;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-badge-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.3); }
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1.05;
+      max-width: 800px;
+      margin: 0 auto 24px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+    .hero h1 span { color: var(--blue); }
+
+    .hero p {
+      font-size: clamp(15px, 2vw, 19px);
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+    .btn-primary {
+      padding: 15px 32px;
+      border-radius: 9999px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--blue-hover); transform: translateY(-1px); }
+    .btn-ghost {
+      padding: 15px 32px;
+      border-radius: 9999px;
+      background: transparent;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      border: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.06); }
+
+    .hero-stats {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 64px;
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+    .hero-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .hero-stat-val {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .hero-stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* ── COUNTDOWN ── */
+    .countdown-section {
+      padding: 80px 24px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #0d0d0d 0%, #111 100%);
+    }
+    .countdown-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 12px;
+    }
+    .countdown-title {
+      font-size: clamp(22px, 4vw, 36px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 48px;
+    }
+    .countdown-grid {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .countdown-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 28px;
+      min-width: 120px;
+    }
+    .countdown-num {
+      font-size: 52px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      color: #fff;
+    }
+    .countdown-unit-label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .countdown-divider {
+      font-size: 40px;
+      font-weight: 900;
+      color: var(--border-light);
+      align-self: center;
+      padding-bottom: 20px;
+    }
+    .countdown-sub {
+      margin-top: 28px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .countdown-sub span { color: var(--amber); font-weight: 600; }
+
+    /* ── HOW IT WORKS ── */
+    .section {
+      padding: 100px 24px;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .section-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(26px, 4vw, 42px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.15;
+    }
+    .section-sub {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 14px auto 0;
+      line-height: 1.65;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .step-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .step-card:hover { border-color: var(--blue); }
+    .step-num {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--blue-muted);
+      color: var(--blue);
+      font-size: 15px;
+      font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px;
+    }
+    .step-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .step-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ── FEATURES ── */
+    .features-bg {
+      background: linear-gradient(180deg, #0d0d0d 0%, #111 50%, #0d0d0d 100%);
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .feature-card:hover {
+      border-color: var(--border-light);
+      transform: translateY(-3px);
+    }
+    .feature-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 18px;
+      flex-shrink: 0;
+    }
+    .feature-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* ── MONEY SECTION ── */
+    .money-section {
+      padding: 80px 24px;
+    }
+    .money-inner {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 60px 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    @media (max-width: 700px) {
+      .money-inner { grid-template-columns: 1fr; gap: 40px; }
+    }
+    .money-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+    .money-title {
+      font-size: clamp(26px, 4vw, 38px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .money-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .money-points {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .money-point {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .money-point-dot {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: rgba(34,197,94,0.15);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .money-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .mock-rate-card {
+      background: #222;
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mock-seller { display: flex; align-items: center; gap: 10px; }
+    .mock-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--blue-muted);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mock-name { font-size: 14px; font-weight: 600; }
+    .mock-rating { font-size: 12px; color: var(--text-muted); }
+    .mock-rate-val { font-size: 16px; font-weight: 800; }
+    .mock-rate-sub { font-size: 11px; color: var(--text-muted); text-align: right; }
+
+    /* ── SECURITY ── */
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .security-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 20px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .security-card:hover { border-color: var(--blue); }
+    .security-icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .security-label {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .security-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 100px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px; height: 400px;
+      background: radial-gradient(ellipse, rgba(37,99,235,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-inner {
+      position: relative;
+      z-index: 1;
+    }
+    .cta-badge {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 9999px;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.25);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .cta-title {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      max-width: 600px;
+      margin: 0 auto 16px;
+    }
+    .cta-title span { color: var(--blue); }
+    .cta-sub {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 420px;
+      margin: 0 auto 36px;
+      line-height: 1.65;
+    }
+    .cta-email-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+    .cta-email-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 14px 18px;
+      background: var(--card);
+      border: 1px solid var(--border-light);
+      border-radius: 9999px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.18s;
+    }
+    .cta-email-input::placeholder { color: var(--text-muted); }
+    .cta-email-input:focus { border-color: var(--blue); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 24px 32px;
+    }
+    .footer-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      text-align: center;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      justify-content: center;
+      list-style: none;
+    }
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-muted);
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: #fff; }
+    .footer-copy {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Mobile adjustments ── */
+    @media (max-width: 480px) {
+      .countdown-unit { min-width: 80px; padding: 18px 16px; }
+      .countdown-num { font-size: 36px; }
+      .countdown-divider { font-size: 28px; }
+      .money-inner { padding: 32px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="container nav-inner">
+      <div class="nav-logo">
+        <div class="nav-logo-icon">
+          <svg width="36" height="36" viewBox="0 0 400 400" fill="none">
+            <rect width="400" height="400" rx="80" fill="#0d0d0d"/>
+            <line x1="100" y1="110" x2="205" y2="228" stroke="#2563EB" stroke-width="52" stroke-linecap="round"/>
+            <line x1="300" y1="110" x2="195" y2="228" stroke="#2563EB" stroke-width="52" stroke-linecap="round"/>
+            <text x="200" y="340" font-family="Inter,system-ui,sans-serif" font-size="88" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="-1">SCROW</text>
+          </svg>
+        </div>
+        X-Scrow
+      </div>
+      <ul class="nav-links">
+        <li><a href="#how-it-works">How it Works</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#security">Security</a></li>
+      </ul>
+      <a href="#notify" class="nav-cta">Get Early Access</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      X-Scrow — Launching January 2026
+    </div>
+    <h1>The Fastest Way to <span>Buy & Sell Crypto</span> Peer-to-Peer</h1>
+    <p>X-Scrow connects buyers and sellers directly. Get the best rates, earn money trading, and move funds in minutes — no banks, no middlemen.</p>
+    <div class="hero-btns">
+      <a href="#notify" class="btn-primary">Get Early Access →</a>
+      <a href="#how-it-works" class="btn-ghost">See How It Works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-val" style="color:#2563EB">0.5%</span>
+        <span class="hero-stat-label">Platform Fee</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" style="color:#22c55e">P2P</span>
+        <span class="hero-stat-label">Direct Trades</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" style="color:#f59e0b">Escrow</span>
+        <span class="hero-stat-label">Protected Funds</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val">USDT · BTC · ETH</span>
+        <span class="hero-stat-label">Supported Assets</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- COUNTDOWN -->
+  <section class="countdown-section">
+    <p class="countdown-label">⏳ Launch Countdown</p>
+    <h2 class="countdown-title">X-Scrow Goes Live In</h2>
+    <div class="countdown-grid">
+      <div class="countdown-unit">
+        <span class="countdown-num" id="cd-days">00</span>
+        <span class="countdown-unit-label">Days</span>
+      </div>
+      <span class="countdown-divider">:</span>
+      <div class="countdown-unit">
+        <span class="countdown-num" id="cd-hours">00</span>
+        <span class="countdown-unit-label">Hours</span>
+      </div>
+      <span class="countdown-divider">:</span>
+      <div class="countdown-unit">
+        <span class="countdown-num" id="cd-mins">00</span>
+        <span class="countdown-unit-label">Minutes</span>
+      </div>
+      <span class="countdown-divider">:</span>
+      <div class="countdown-unit">
+        <span class="countdown-num" id="cd-secs">00</span>
+        <span class="countdown-unit-label">Seconds</span>
+      </div>
+    </div>
+    <p class="countdown-sub">Target launch: <span>January 1, 2026</span> · Date subject to change</p>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Simple Process</p>
+        <h2 class="section-title">Trade in 4 Easy Steps</h2>
+        <p class="section-sub">No complicated onboarding. Just sign up, browse offers, and start trading.</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-title">Create Your Account</div>
+          <div class="step-desc">Sign up in minutes. Verify your identity with NIN or BVN to unlock full X-Scrow trading access.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-title">Browse the Marketplace</div>
+          <div class="step-desc">Find sellers offering USDT, BTC, ETH, and more at the best rates in the market.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-title">Initiate a Trade</div>
+          <div class="step-desc">Enter your amount, review the merchant's terms, and send your payment within the 15-minute window.</div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-title">Receive Your Crypto</div>
+          <div class="step-desc">Once payment is confirmed, crypto is instantly released from escrow straight to your wallet.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAKE MONEY -->
+  <section class="money-section">
+    <div class="container">
+      <div class="money-inner">
+        <div>
+          <p class="money-eyebrow">💰 Earn on P2PEx</p>
+          <h2 class="money-title">List Your Rates. Trade on Your Terms. Get Paid.</h2>
+          <p class="money-desc">X-Scrow isn't just for buying — it's for earning. List your crypto at competitive rates and earn the spread every time someone trades with you.</p>
+          <div class="money-points">
+            <div class="money-point">
+              <div class="money-point-dot">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              Set your own exchange rate for every trade
+            </div>
+            <div class="money-point">
+              <div class="money-point-dot">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              Accept NGN, USD, or other fiat currencies
+            </div>
+            <div class="money-point">
+              <div class="money-point-dot">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              Funds protected by P2PEx Escrow until payment clears
+            </div>
+            <div class="money-point">
+              <div class="money-point-dot">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 13l4 4L19 7" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              Build your reputation and attract more buyers
+            </div>
+          </div>
+        </div>
+        <div class="money-visual">
+          <div class="mock-rate-card">
+            <div class="mock-seller">
+              <div class="mock-avatar">Q</div>
+              <div>
+                <div class="mock-name">QuickSwap</div>
+                <div class="mock-rating">⭐ 4.9 · 234 trades</div>
+              </div>
+            </div>
+            <div>
+              <div class="mock-rate-val">₦1,500</div>
+              <div class="mock-rate-sub">per USDT</div>
+            </div>
+          </div>
+          <div class="mock-rate-card">
+            <div class="mock-seller">
+              <div class="mock-avatar" style="background:rgba(34,197,94,0.15);color:#22c55e">T</div>
+              <div>
+                <div class="mock-name">TradeMax</div>
+                <div class="mock-rating">⭐ 4.6 · 134 trades</div>
+              </div>
+            </div>
+            <div>
+              <div class="mock-rate-val">₦1,490</div>
+              <div class="mock-rate-sub">per USDT</div>
+            </div>
+          </div>
+          <div class="mock-rate-card">
+            <div class="mock-seller">
+              <div class="mock-avatar" style="background:rgba(245,158,11,0.15);color:#f59e0b">N</div>
+              <div>
+                <div class="mock-name">NairaHub</div>
+                <div class="mock-rating">⭐ 4.5 · 97 trades</div>
+              </div>
+            </div>
+            <div>
+              <div class="mock-rate-val">₦1,505</div>
+              <div class="mock-rate-sub">per USDT</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section features-bg" id="features">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Everything You Need</p>
+        <h2 class="section-title">Built for Serious Traders</h2>
+        <p class="section-sub">Every feature designed to make your trading experience smooth, safe, and profitable.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(37,99,235,0.15)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M4 8h13M4 8l3-3M4 8l3 3" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M20 16H7M20 16l-3-3M20 16l-3 3" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="feature-title">Live Marketplace</div>
+          <div class="feature-desc">Real-time listings from verified sellers. Filter by currency, rate, and availability. Find the best deal instantly.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(34,197,94,0.15)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L4 6v6c0 5.25 3.5 9.74 8 11 4.5-1.26 8-5.75 8-11V6L12 2Z" stroke="#22c55e" stroke-width="2"/>
+              <path d="M9 12l2 2 4-4" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="feature-title">Escrow Protection</div>
+          <div class="feature-desc">Crypto is locked in secure escrow before any payment is sent. Your funds never move without confirmation.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(245,158,11,0.15)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <rect x="2" y="5" width="20" height="14" rx="3" stroke="#f59e0b" stroke-width="2"/>
+              <path d="M2 10h20" stroke="#f59e0b" stroke-width="2"/>
+              <circle cx="7" cy="15" r="1.5" fill="#f59e0b"/>
+            </svg>
+          </div>
+          <div class="feature-title">Multi-Currency Wallets</div>
+          <div class="feature-desc">Generate wallets for USDT, BTC, ETH, NGN, USD and more. Transfer and receive from anywhere, any time.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(239,68,68,0.12)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="8" r="4" stroke="#ef4444" stroke-width="2"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="feature-title">Verified Merchants</div>
+          <div class="feature-desc">KYC-verified sellers with public ratings and trade history. Know who you're trading with before you send a naira.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(37,99,235,0.15)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="#2563EB" stroke-width="2"/>
+              <path d="M12 6v6l4 2" stroke="#2563EB" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="feature-title">15-Minute Trade Window</div>
+          <div class="feature-desc">Trades are time-bound for speed and security. Pay within the window, get your crypto instantly.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background:rgba(34,197,94,0.15)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#22c55e" stroke-width="2"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="feature-title">Real-Time Notifications</div>
+          <div class="feature-desc">Instant alerts for every trade, payment, and wallet activity. Never miss a beat on your P2PEx account.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECURITY -->
+  <section class="section" id="security">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Trust & Safety</p>
+        <h2 class="section-title">Your Money is Safe With Us</h2>
+        <p class="section-sub">Enterprise-grade security built into every layer of X-Scrow so you can trade without worry.</p>
+      </div>
+      <div class="security-grid">
+        <div class="security-card">
+          <div class="security-icon">🔐</div>
+          <div class="security-label">AES-256 Encryption</div>
+          <div class="security-sub">All data encrypted end-to-end</div>
+        </div>
+        <div class="security-card">
+          <div class="security-icon">🛡️</div>
+          <div class="security-label">Escrow System</div>
+          <div class="security-sub">Funds held until trade confirms</div>
+        </div>
+        <div class="security-card">
+          <div class="security-icon">🪪</div>
+          <div class="security-label">KYC Verified</div>
+          <div class="security-sub">NIN & BVN identity checks</div>
+        </div>
+        <div class="security-card">
+          <div class="security-icon">🔑</div>
+          <div class="security-label">Transaction PIN</div>
+          <div class="security-sub">Extra layer for withdrawals</div>
+        </div>
+        <div class="security-card">
+          <div class="security-icon">❄️</div>
+          <div class="security-label">Freeze & Unfreeze</div>
+          <div class="security-sub">Lock your account instantly</div>
+        </div>
+        <div class="security-card">
+          <div class="security-icon">⚖️</div>
+          <div class="security-label">Dispute Resolution</div>
+          <div class="security-sub">24h expert mediation team</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA / NOTIFY -->
+  <section class="cta-section" id="notify">
+    <div class="cta-inner container">
+      <div class="cta-badge">🚀 Early Access</div>
+      <h2 class="cta-title">Be the First to <span>Start Earning</span> on X-Scrow</h2>
+      <p class="cta-sub">Drop your email and we'll notify you the moment X-Scrow launches. Early users get priority access and special rates.</p>
+      <div class="cta-email-row">
+        <input type="email" class="cta-email-input" placeholder="Enter your email address" id="notify-email"/>
+        <button class="btn-primary" onclick="handleNotify()">Notify Me</button>
+      </div>
+      <p id="notify-msg" style="margin-top:14px;font-size:13px;color:#22c55e;display:none">✓ You're on the list! We'll be in touch.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">
+          <div class="nav-logo-icon">
+            <svg width="28" height="28" viewBox="0 0 400 400" fill="none">
+              <rect width="400" height="400" rx="80" fill="#0d0d0d"/>
+              <line x1="100" y1="110" x2="205" y2="228" stroke="#2563EB" stroke-width="52" stroke-linecap="round"/>
+              <line x1="300" y1="110" x2="195" y2="228" stroke="#2563EB" stroke-width="52" stroke-linecap="round"/>
+              <text x="200" y="340" font-family="Inter,system-ui,sans-serif" font-size="88" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="-1">SCROW</text>
+            </svg>
+          </div>
+          X-Scrow
+        </div>
+        <ul class="footer-links">
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Support</a></li>
+        </ul>
+        <p class="footer-copy">© 2025 X-Scrow. All rights reserved. Launch date subject to change.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Countdown Timer ──
+    const LAUNCH = new Date('2026-01-01T00:00:00');
+    function updateCountdown() {
+      const now  = new Date();
+      const diff = LAUNCH - now;
+      if (diff <= 0) {
+        document.getElementById('cd-days').textContent  = '00';
+        document.getElementById('cd-hours').textContent = '00';
+        document.getElementById('cd-mins').textContent  = '00';
+        document.getElementById('cd-secs').textContent  = '00';
+        return;
+      }
+      const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secs  = Math.floor((diff % (1000 * 60)) / 1000);
+      document.getElementById('cd-days').textContent  = String(days).padStart(2, '0');
+      document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('cd-mins').textContent  = String(mins).padStart(2, '0');
+      document.getElementById('cd-secs').textContent  = String(secs).padStart(2, '0');
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // ── Notify ──
+    function handleNotify() {
+      const email = document.getElementById('notify-email').value;
+      if (!email || !/\S+@\S+\.\S+/.test(email)) {
+        alert('Please enter a valid email address.');
+        return;
+      }
+      document.getElementById('notify-msg').style.display = 'block';
+      document.getElementById('notify-email').value = '';
+    }
+  </script>
+</body>
+</html>
